@@ -3,7 +3,7 @@ package com.eventif.controller;
 import com.eventif.dto.CadastroRequestDto;
 import com.eventif.dto.LoginRequestDto;
 import com.eventif.dto.UserResponseDto;
-import com.eventif.model.User;
+import com.eventif.model.Usuario;
 import com.eventif.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -53,7 +53,7 @@ public class AuthController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<UserResponseDto> getUsuarioLogado(@AuthenticationPrincipal User usuarioLogado) {
+    public ResponseEntity<UserResponseDto> getUsuarioLogado(@AuthenticationPrincipal Usuario usuarioLogado) {
         UserResponseDto dto = UserResponseDto.toDto(usuarioLogado);
         return ResponseEntity.status(HttpStatus.OK).body(dto);
     }

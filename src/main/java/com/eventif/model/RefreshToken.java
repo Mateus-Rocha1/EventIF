@@ -17,7 +17,7 @@ public class RefreshToken {
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    private Usuario user;
 
     private LocalDateTime expiresAt;
 
@@ -26,7 +26,7 @@ public class RefreshToken {
     public RefreshToken() {
     }
 
-    public RefreshToken(Long id, UUID refreshToken, User user, LocalDateTime expiresAt, LocalDateTime sessionExpiresAt) {
+    public RefreshToken(Long id, UUID refreshToken, Usuario user, LocalDateTime expiresAt, LocalDateTime sessionExpiresAt) {
         this.id = id;
         this.refreshToken = refreshToken;
         this.user = user;
@@ -50,11 +50,11 @@ public class RefreshToken {
         this.refreshToken = refreshToken;
     }
 
-    public User getUser() {
+    public Usuario getUser() {
         return user;
     }
 
-    public void setUser(User user) {
+    public void setUser(Usuario user) {
         this.user = user;
     }
 

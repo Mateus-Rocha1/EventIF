@@ -1,9 +1,10 @@
 package com.eventif.service;
 
 import com.eventif.exception.RegraDeNegocioException;
+import com.eventif.model.Perfil;
 import com.eventif.model.RefreshToken;
-import com.eventif.model.Roles;
-import com.eventif.model.User;
+import com.eventif.model.Usuario;
+import com.eventif.repository.PerfilRepository;
 import com.eventif.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,13 +26,15 @@ import java.util.UUID;
 public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
+    private final PerfilRepository perfilRepository;
     private final PasswordEncoder encoder;
     private final TokenCookieService tokenCookieService;
     private final TokenJWTService tokenJWTService;
     private final RefreshTokenService refreshTokenService;
 
-    public UserService(UserRepository userRepository, PasswordEncoder encoder, TokenCookieService tokenCookieService, TokenJWTService tokenJWTService, RefreshTokenService refreshTokenService) {
+    public UserService(UserRepository userRepository, PerfilRepository perfilRepository, PasswordEncoder encoder, TokenCookieService tokenCookieService, TokenJWTService tokenJWTService, RefreshTokenService refreshTokenService) {
         this.userRepository = userRepository;
+        this.perfilRepository = perfilRepository;
         this.encoder = encoder;
         this.tokenCookieService = tokenCookieService;
         this.tokenJWTService = tokenJWTService;
@@ -45,8 +48,12 @@ public class UserService implements UserDetailsService {
 
     public List<ResponseCookie> loginUsuario(String email, String senha) {
 
-        User usuario = userRepository.findByEmail(email).orElseThrow(() -> new EntityNotFoundException("usuário não encontrado"));
+        Usuario usuario = userRepository.findByEmail(email).orElseThrow(() -> new EntityNotFoundException("usuário não encontrado"));
         List<ResponseCookie> cookies = new ArrayList<>();
+
+        if (!usuario.isAtivo()) {
+            throw new RegraDeNegocioException("Usuário inativo");
+        }
 
         if (!encoder.matches(senha, usuario.getPassword())) {
             throw new RegraDeNegocioException("Senha inválida");
@@ -63,55 +70,59 @@ public class UserService implements UserDetailsService {
     }
 
     public void cadastrarParticipante(String email, String senha, String nome) {
-
-        Optional<User> possivelUsuario = userRepository.findByEmail(email);
+        Optional<Usuario> possivelUsuario = userRepository.findByEmail(email);
 
         if (possivelUsuario.isPresent()) {
             throw new RegraDeNegocioException("Usuário já existe");
         }
 
-        User usuario = new User();
+        Perfil perfil = perfilRepository.findByNome("ROLE_PARTICIPANTE").orElseThrow(() -> new EntityNotFoundException("Perfil ROLE_PARTICIPANTE não encontrado"));
+
+        Usuario usuario = new Usuario();
         usuario.setEmail(email);
         usuario.setNome(nome);
-        String senhaEncriptografada = encoder.encode(senha);
-        usuario.setSenha(senhaEncriptografada);
-        usuario.setRoles(List.of(Roles.PARTICIPANTE));
+        usuario.setSenha(encoder.encode(senha));
+        usuario.setAtivo(true);
+        usuario.setPerfis(List.of(perfil));
 
         userRepository.save(usuario);
     }
 
     public void cadastrarOrganizador(String email, String senha, String nome) {
-
-        Optional<User> possivelUsuario = userRepository.findByEmail(email);
+        Optional<Usuario> possivelUsuario = userRepository.findByEmail(email);
 
         if (possivelUsuario.isPresent()) {
             throw new RegraDeNegocioException("Usuário já existe");
         }
 
-        User usuario = new User();
+        Perfil perfil = perfilRepository.findByNome("ROLE_ORGANIZADOR").orElseThrow(() -> new EntityNotFoundException("Perfil ROLE_ORGANIZADOR não encontrado"));
+
+        Usuario usuario = new Usuario();
         usuario.setEmail(email);
         usuario.setNome(nome);
-        String senhaEncriptografada = encoder.encode(senha);
-        usuario.setSenha(senhaEncriptografada);
-        usuario.setRoles(List.of(Roles.ORGANIZADOR));
+        usuario.setSenha(encoder.encode(senha));
+        usuario.setAtivo(true);
+        usuario.setPerfis(List.of(perfil));
 
         userRepository.save(usuario);
     }
 
     public void cadastrarAdmin(String email, String senha, String nome) {
-
-        Optional<User> possivelUsuario = userRepository.findByEmail(email);
+        Optional<Usuario> possivelUsuario = userRepository.findByEmail(email);
 
         if (possivelUsuario.isPresent()) {
             throw new RegraDeNegocioException("Usuário já existe");
         }
 
-        User usuario = new User();
+        Perfil perfil = perfilRepository.findByNome("ROLE_ADMIN").orElseThrow(() -> new EntityNotFoundException("Perfil ROLE_ADMIN não encontrado"));
+
+        Usuario usuario = new Usuario();
         usuario.setEmail(email);
         usuario.setNome(nome);
-        String senhaEncriptografada = encoder.encode(senha);
-        usuario.setSenha(senhaEncriptografada);
-        usuario.setRoles(List.of(Roles.ADMIN));
+        usuario.setSenha(encoder.encode(senha));
+        usuario.setAtivo(true);
+        usuario.setPerfis(List.of(perfil));
+
         userRepository.save(usuario);
     }
 
