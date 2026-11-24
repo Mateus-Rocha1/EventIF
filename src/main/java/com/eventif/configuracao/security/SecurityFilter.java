@@ -1,6 +1,6 @@
 package com.eventif.configuracao.security;
 
-import com.eventif.model.User;
+import com.eventif.model.Usuario;
 import com.eventif.repository.UserRepository;
 import com.eventif.service.TokenCookieService;
 import com.eventif.service.TokenJWTService;
@@ -36,10 +36,12 @@ public class SecurityFilter extends OncePerRequestFilter {
         if (tokenJWT != null) {
             try {
                 String email = tokenJWTService.getSubject(tokenJWT);
-                User usuario = userRepository.findByEmail(email).orElseThrow(() -> new EntityNotFoundException("User not found"));
+                Usuario usuario = userRepository.findByEmail(email).orElseThrow(() -> new EntityNotFoundException("User not found"));
 
-                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(usuario, null, usuario.getAuthorities());
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+                if (usuario.isAtivo()) {
+                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(usuario, null, usuario.getAuthorities());
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                }
             } catch (Exception e) {
                 SecurityContextHolder.clearContext();
             }

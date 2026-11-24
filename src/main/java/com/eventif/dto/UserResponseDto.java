@@ -1,7 +1,7 @@
 package com.eventif.dto;
 
-import com.eventif.model.Roles;
-import com.eventif.model.User;
+import com.eventif.model.Perfil;
+import com.eventif.model.Usuario;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -12,16 +12,18 @@ public record UserResponseDto(
         LocalDateTime updatedAt,
         String email,
         String nome,
-        List<Roles> roles
+        boolean ativo,
+        List<String> perfis
 ) {
-    public static UserResponseDto toDto(User usuario) {
+    public static UserResponseDto toDto(Usuario usuario) {
         return new UserResponseDto(
                 usuario.getId(),
                 usuario.getCreatedAt(),
                 usuario.getUpdatedAt(),
                 usuario.getEmail(),
                 usuario.getNome(),
-                usuario.getRoles()
+                usuario.isAtivo(),
+                usuario.getPerfis().stream().map(Perfil::getNome).toList()
         );
     }
 }

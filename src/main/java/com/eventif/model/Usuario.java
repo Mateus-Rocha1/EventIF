@@ -15,7 +15,7 @@ import java.util.List;
 @EntityListeners(AuditingEntityListener.class)
 @Entity
 @Table(name = "usuarios")
-public class User implements UserDetails {
+public class Usuario implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,33 +28,44 @@ public class User implements UserDetails {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    private String email;
-
-    private String senha;
-
+    @Column(nullable = false)
     private String nome;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @Enumerated(EnumType.STRING)
-    private List<Roles> roles;
+    @Column(nullable = false, unique = true)
+    private String email;
 
-    public User() {
+    @Column(nullable = false)
+    private String senha;
+
+    @Column(nullable = false)
+    private boolean ativo = true;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "usuario_perfil",
+            joinColumns = @JoinColumn(name = "usuario_id"),
+            inverseJoinColumns = @JoinColumn(name = "perfil_id")
+    )
+    private List<Perfil> perfis;
+
+    public Usuario() {
     }
 
-    public User(Long id, LocalDateTime createdAt, LocalDateTime updatedAt, String email, String senha, String nome, List<Roles> roles) {
+    public Usuario(Long id, LocalDateTime createdAt, LocalDateTime updatedAt, String nome, String email, String senha, boolean ativo, List<Perfil> perfis) {
         this.id = id;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.nome = nome;
         this.email = email;
         this.senha = senha;
-        this.nome = nome;
-        this.roles = roles;
+        this.ativo = ativo;
+        this.perfis = perfis;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return this.roles.stream()
-                .map(r -> new SimpleGrantedAuthority("ROLE_" + r.name()))
+        return this.perfis.stream()
+                .map(p -> new SimpleGrantedAuthority(p.getNome()))
                 .toList();
     }
 
@@ -65,7 +76,12 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return this.getEmail();
+        return this.email;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return this.ativo;
     }
 
     public Long getId() {
@@ -92,6 +108,14 @@ public class User implements UserDetails {
         this.updatedAt = updatedAt;
     }
 
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
     public String getEmail() {
         return email;
     }
@@ -108,19 +132,19 @@ public class User implements UserDetails {
         this.senha = senha;
     }
 
-    public String getNome() {
-        return nome;
+    public boolean isAtivo() {
+        return ativo;
     }
 
-    public void setNome(String nome) {
-        this.nome = nome;
+    public void setAtivo(boolean ativo) {
+        this.ativo = ativo;
     }
 
-    public List<Roles> getRoles() {
-        return roles;
+    public List<Perfil> getPerfis() {
+        return perfis;
     }
 
-    public void setRoles(List<Roles> roles) {
-        this.roles = roles;
+    public void setPerfis(List<Perfil> perfis) {
+        this.perfis = perfis;
     }
 }

@@ -2,7 +2,7 @@ package com.eventif.service;
 
 import com.eventif.exception.RegraDeNegocioException;
 import com.eventif.model.RefreshToken;
-import com.eventif.model.User;
+import com.eventif.model.Usuario;
 import com.eventif.repository.RefreshTokenRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
@@ -21,7 +21,7 @@ public class RefreshTokenService {
     }
 
     @Transactional
-    public RefreshToken criarRefreshTokenNoLogin(User user) {
+    public RefreshToken criarRefreshTokenNoLogin(Usuario user) {
 
         RefreshToken refreshToken = new RefreshToken();
 
