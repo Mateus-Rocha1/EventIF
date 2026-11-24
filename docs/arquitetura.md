@@ -66,8 +66,8 @@ erDiagram
         String email UK
         String senha
         boolean ativo
-        LocalDateTime createdAt
-        LocalDateTime updatedAt
+        LocalDateTime criadoEm
+        LocalDateTime atualizadoEm
     }
 
     PERFIL {
@@ -115,9 +115,9 @@ erDiagram
     REFRESH_TOKEN {
         Long id PK
         UUID refreshToken UK
-        Long user_id FK
-        LocalDateTime expiresAt
-        LocalDateTime sessionExpiresAt
+        Long usuario_id FK
+        LocalDateTime expiraEm
+        LocalDateTime sessaoExpiraEm
     }
 ```
 

@@ -21,14 +21,14 @@ public class RefreshTokenService {
     }
 
     @Transactional
-    public RefreshToken criarRefreshTokenNoLogin(Usuario user) {
+    public RefreshToken criarRefreshTokenNoLogin(Usuario usuario) {
 
         RefreshToken refreshToken = new RefreshToken();
 
         refreshToken.setRefreshToken(UUID.randomUUID());
-        refreshToken.setUser(user);
-        refreshToken.setExpiresAt(LocalDateTime.now().plus(Duration.ofHours(1)));
-        refreshToken.setSessionExpiresAt(LocalDateTime.now().plus(Duration.ofHours(8)));
+        refreshToken.setUsuario(usuario);
+        refreshToken.setExpiraEm(LocalDateTime.now().plus(Duration.ofHours(1)));
+        refreshToken.setSessaoExpiraEm(LocalDateTime.now().plus(Duration.ofHours(8)));
 
         refreshTokenRepository.save(refreshToken);
 
@@ -39,12 +39,12 @@ public class RefreshTokenService {
 
         RefreshToken refreshToken = refreshTokenRepository.findByRefreshToken(refreshTokenRecebido).orElseThrow(() -> new RegraDeNegocioException("Erro ao renovar token"));
 
-        if (LocalDateTime.now().isAfter(refreshToken.getExpiresAt()) || LocalDateTime.now().isAfter(refreshToken.getSessionExpiresAt())) {
+        if (LocalDateTime.now().isAfter(refreshToken.getExpiraEm()) || LocalDateTime.now().isAfter(refreshToken.getSessaoExpiraEm())) {
             refreshTokenRepository.delete(refreshToken);
             throw new RegraDeNegocioException("Sessão expirada");
         }
 
-        refreshToken.setExpiresAt(LocalDateTime.now().plusHours(1));
+        refreshToken.setExpiraEm(LocalDateTime.now().plusHours(1));
         refreshToken.setRefreshToken(UUID.randomUUID());
         refreshTokenRepository.save(refreshToken);
 

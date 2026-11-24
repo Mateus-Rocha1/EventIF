@@ -2,9 +2,9 @@ package com.eventif.controller;
 
 import com.eventif.dto.CadastroRequestDto;
 import com.eventif.dto.LoginRequestDto;
-import com.eventif.dto.UserResponseDto;
+import com.eventif.dto.UsuarioResponseDto;
 import com.eventif.model.Usuario;
-import com.eventif.service.UserService;
+import com.eventif.service.UsuarioService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
@@ -20,15 +20,15 @@ import java.util.List;
 @RequestMapping("/auth")
 public class AuthController {
 
-    private final UserService userService;
+    private final UsuarioService usuarioService;
 
-    public AuthController(UserService userService) {
-        this.userService = userService;
+    public AuthController(UsuarioService usuarioService) {
+        this.usuarioService = usuarioService;
     }
 
     @PostMapping("/login")
     public ResponseEntity<Void> login(@RequestBody @Valid LoginRequestDto dto) {
-        List<ResponseCookie> cookies = userService.loginUsuario(dto.email(), dto.senha());
+        List<ResponseCookie> cookies = usuarioService.loginUsuario(dto.email(), dto.senha());
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .header(HttpHeaders.SET_COOKIE, cookies.get(0).toString())
@@ -38,13 +38,13 @@ public class AuthController {
 
     @PostMapping("/cadastro-participante")
     public ResponseEntity<Void> cadastroParticipante(@RequestBody @Valid CadastroRequestDto dto) {
-        userService.cadastrarParticipante(dto.email(), dto.senha(), dto.nome());
+        usuarioService.cadastrarParticipante(dto.email(), dto.senha(), dto.nome());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @DeleteMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletRequest httpServletRequest) {
-        List<ResponseCookie> cookies = userService.realizarLogout(httpServletRequest);
+        List<ResponseCookie> cookies = usuarioService.realizarLogout(httpServletRequest);
         return ResponseEntity
                 .status(HttpStatus.NO_CONTENT)
                 .header(HttpHeaders.SET_COOKIE, cookies.get(0).toString())
@@ -53,14 +53,14 @@ public class AuthController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<UserResponseDto> getUsuarioLogado(@AuthenticationPrincipal Usuario usuarioLogado) {
-        UserResponseDto dto = UserResponseDto.toDto(usuarioLogado);
+    public ResponseEntity<UsuarioResponseDto> getUsuarioLogado(@AuthenticationPrincipal Usuario usuarioLogado) {
+        UsuarioResponseDto dto = UsuarioResponseDto.toDto(usuarioLogado);
         return ResponseEntity.status(HttpStatus.OK).body(dto);
     }
 
     @PostMapping("/refresh")
     public ResponseEntity<Void> refresh(HttpServletRequest httpServletRequest) {
-        List<ResponseCookie> cookies = userService.refresh(httpServletRequest);
+        List<ResponseCookie> cookies = usuarioService.refresh(httpServletRequest);
 
         return ResponseEntity
                 .status(HttpStatus.OK)

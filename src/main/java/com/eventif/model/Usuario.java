@@ -23,10 +23,10 @@ public class Usuario implements UserDetails {
 
     @CreatedDate
     @Column(updatable = false)
-    private LocalDateTime createdAt;
+    private LocalDateTime criadoEm;
 
     @LastModifiedDate
-    private LocalDateTime updatedAt;
+    private LocalDateTime atualizadoEm;
 
     @Column(nullable = false)
     private String nome;
@@ -51,10 +51,10 @@ public class Usuario implements UserDetails {
     public Usuario() {
     }
 
-    public Usuario(Long id, LocalDateTime createdAt, LocalDateTime updatedAt, String nome, String email, String senha, boolean ativo, List<Perfil> perfis) {
+    public Usuario(Long id, LocalDateTime criadoEm, LocalDateTime atualizadoEm, String nome, String email, String senha, boolean ativo, List<Perfil> perfis) {
         this.id = id;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
+        this.criadoEm = criadoEm;
+        this.atualizadoEm = atualizadoEm;
         this.nome = nome;
         this.email = email;
         this.senha = senha;
@@ -92,20 +92,20 @@ public class Usuario implements UserDetails {
         this.id = id;
     }
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
+    public LocalDateTime getCriadoEm() {
+        return criadoEm;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
+    public void setCriadoEm(LocalDateTime criadoEm) {
+        this.criadoEm = criadoEm;
     }
 
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
+    public LocalDateTime getAtualizadoEm() {
+        return atualizadoEm;
     }
 
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
+    public void setAtualizadoEm(LocalDateTime atualizadoEm) {
+        this.atualizadoEm = atualizadoEm;
     }
 
     public String getNome() {

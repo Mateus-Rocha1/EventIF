@@ -117,7 +117,7 @@ eventif/
 - **Versionamento de banco com Flyway:** migrations separadas por entidade (`V1` a `V8`) com validação estrita do schema (`ddl-auto=validate`).
 - **Autenticação com JWT + Cookies `HttpOnly` + Rotação de Refresh Token:** proteção contra leitura de token via JavaScript (XSS) e renovação transparente de sessão.
 - **Documentação interativa com Swagger UI (Springdoc OpenAPI).**
-- **Auditoria JPA (`@EnableJpaAuditing`):** rastreamento automático de `createdAt` e `updatedAt`.
+- **Auditoria JPA (`@EnableJpaAuditing`):** rastreamento automático de `criadoEm` e `atualizadoEm`.
 
 ### O que ficou faltando / Próximas Etapas
 - `[PREENCHER SE ALGUMA FUNCIONALIDADE FICAR PENDENTE NA ENTREGA FINAL OU REMOVER SE TUDO FOR CONCLUÍDO]`

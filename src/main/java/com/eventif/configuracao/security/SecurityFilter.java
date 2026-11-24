@@ -1,7 +1,7 @@
 package com.eventif.configuracao.security;
 
 import com.eventif.model.Usuario;
-import com.eventif.repository.UserRepository;
+import com.eventif.repository.UsuarioRepository;
 import com.eventif.service.TokenCookieService;
 import com.eventif.service.TokenJWTService;
 import jakarta.persistence.EntityNotFoundException;
@@ -20,12 +20,12 @@ import java.io.IOException;
 public class SecurityFilter extends OncePerRequestFilter {
 
     private final TokenJWTService tokenJWTService;
-    private final UserRepository userRepository;
+    private final UsuarioRepository usuarioRepository;
     private final TokenCookieService tokenCookieService;
 
-    public SecurityFilter(TokenJWTService tokenJWTService, UserRepository userRepository, TokenCookieService tokenCookieService) {
+    public SecurityFilter(TokenJWTService tokenJWTService, UsuarioRepository usuarioRepository, TokenCookieService tokenCookieService) {
         this.tokenJWTService = tokenJWTService;
-        this.userRepository = userRepository;
+        this.usuarioRepository = usuarioRepository;
         this.tokenCookieService = tokenCookieService;
     }
 
@@ -36,7 +36,7 @@ public class SecurityFilter extends OncePerRequestFilter {
         if (tokenJWT != null) {
             try {
                 String email = tokenJWTService.getSubject(tokenJWT);
-                Usuario usuario = userRepository.findByEmail(email).orElseThrow(() -> new EntityNotFoundException("User not found"));
+                Usuario usuario = usuarioRepository.findByEmail(email).orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado"));
 
                 if (usuario.isAtivo()) {
                     UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(usuario, null, usuario.getAuthorities());

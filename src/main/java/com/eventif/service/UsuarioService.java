@@ -5,7 +5,7 @@ import com.eventif.model.Perfil;
 import com.eventif.model.RefreshToken;
 import com.eventif.model.Usuario;
 import com.eventif.repository.PerfilRepository;
-import com.eventif.repository.UserRepository;
+import com.eventif.repository.UsuarioRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
@@ -23,17 +23,17 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class UserService implements UserDetailsService {
+public class UsuarioService implements UserDetailsService {
 
-    private final UserRepository userRepository;
+    private final UsuarioRepository usuarioRepository;
     private final PerfilRepository perfilRepository;
     private final PasswordEncoder encoder;
     private final TokenCookieService tokenCookieService;
     private final TokenJWTService tokenJWTService;
     private final RefreshTokenService refreshTokenService;
 
-    public UserService(UserRepository userRepository, PerfilRepository perfilRepository, PasswordEncoder encoder, TokenCookieService tokenCookieService, TokenJWTService tokenJWTService, RefreshTokenService refreshTokenService) {
-        this.userRepository = userRepository;
+    public UsuarioService(UsuarioRepository usuarioRepository, PerfilRepository perfilRepository, PasswordEncoder encoder, TokenCookieService tokenCookieService, TokenJWTService tokenJWTService, RefreshTokenService refreshTokenService) {
+        this.usuarioRepository = usuarioRepository;
         this.perfilRepository = perfilRepository;
         this.encoder = encoder;
         this.tokenCookieService = tokenCookieService;
@@ -43,12 +43,12 @@ public class UserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        return userRepository.findByEmail(email).orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado"));
+        return usuarioRepository.findByEmail(email).orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado"));
     }
 
     public List<ResponseCookie> loginUsuario(String email, String senha) {
 
-        Usuario usuario = userRepository.findByEmail(email).orElseThrow(() -> new EntityNotFoundException("usuário não encontrado"));
+        Usuario usuario = usuarioRepository.findByEmail(email).orElseThrow(() -> new EntityNotFoundException("usuário não encontrado"));
         List<ResponseCookie> cookies = new ArrayList<>();
 
         if (!usuario.isAtivo()) {
@@ -59,7 +59,7 @@ public class UserService implements UserDetailsService {
             throw new RegraDeNegocioException("Senha inválida");
         } else {
 
-            String token = tokenJWTService.generateToken(usuario, Duration.ofMinutes(15));
+            String token = tokenJWTService.gerarToken(usuario, Duration.ofMinutes(15));
             cookies.add(tokenCookieService.gerarCookieComToken(token, Duration.ofMinutes(15)));
 
             RefreshToken refreshToken = refreshTokenService.criarRefreshTokenNoLogin(usuario);
@@ -70,13 +70,14 @@ public class UserService implements UserDetailsService {
     }
 
     public void cadastrarParticipante(String email, String senha, String nome) {
-        Optional<Usuario> possivelUsuario = userRepository.findByEmail(email);
+        Optional<Usuario> possivelUsuario = usuarioRepository.findByEmail(email);
 
         if (possivelUsuario.isPresent()) {
             throw new RegraDeNegocioException("Usuário já existe");
         }
 
-        Perfil perfil = perfilRepository.findByNome("ROLE_PARTICIPANTE").orElseThrow(() -> new EntityNotFoundException("Perfil ROLE_PARTICIPANTE não encontrado"));
+        Perfil perfil = perfilRepository.findByNome("ROLE_PARTICIPANTE")
+                .orElseThrow(() -> new EntityNotFoundException("Perfil ROLE_PARTICIPANTE não encontrado"));
 
         Usuario usuario = new Usuario();
         usuario.setEmail(email);
@@ -85,17 +86,18 @@ public class UserService implements UserDetailsService {
         usuario.setAtivo(true);
         usuario.setPerfis(List.of(perfil));
 
-        userRepository.save(usuario);
+        usuarioRepository.save(usuario);
     }
 
     public void cadastrarOrganizador(String email, String senha, String nome) {
-        Optional<Usuario> possivelUsuario = userRepository.findByEmail(email);
+        Optional<Usuario> possivelUsuario = usuarioRepository.findByEmail(email);
 
         if (possivelUsuario.isPresent()) {
             throw new RegraDeNegocioException("Usuário já existe");
         }
 
-        Perfil perfil = perfilRepository.findByNome("ROLE_ORGANIZADOR").orElseThrow(() -> new EntityNotFoundException("Perfil ROLE_ORGANIZADOR não encontrado"));
+        Perfil perfil = perfilRepository.findByNome("ROLE_ORGANIZADOR")
+                .orElseThrow(() -> new EntityNotFoundException("Perfil ROLE_ORGANIZADOR não encontrado"));
 
         Usuario usuario = new Usuario();
         usuario.setEmail(email);
@@ -104,17 +106,18 @@ public class UserService implements UserDetailsService {
         usuario.setAtivo(true);
         usuario.setPerfis(List.of(perfil));
 
-        userRepository.save(usuario);
+        usuarioRepository.save(usuario);
     }
 
     public void cadastrarAdmin(String email, String senha, String nome) {
-        Optional<Usuario> possivelUsuario = userRepository.findByEmail(email);
+        Optional<Usuario> possivelUsuario = usuarioRepository.findByEmail(email);
 
         if (possivelUsuario.isPresent()) {
             throw new RegraDeNegocioException("Usuário já existe");
         }
 
-        Perfil perfil = perfilRepository.findByNome("ROLE_ADMIN").orElseThrow(() -> new EntityNotFoundException("Perfil ROLE_ADMIN não encontrado"));
+        Perfil perfil = perfilRepository.findByNome("ROLE_ADMIN")
+                .orElseThrow(() -> new EntityNotFoundException("Perfil ROLE_ADMIN não encontrado"));
 
         Usuario usuario = new Usuario();
         usuario.setEmail(email);
@@ -123,7 +126,7 @@ public class UserService implements UserDetailsService {
         usuario.setAtivo(true);
         usuario.setPerfis(List.of(perfil));
 
-        userRepository.save(usuario);
+        usuarioRepository.save(usuario);
     }
 
     public List<ResponseCookie> refresh(HttpServletRequest httpServletRequest) {
@@ -137,7 +140,7 @@ public class UserService implements UserDetailsService {
         RefreshToken novoRefreshToken = refreshTokenService.trocaORefreshToken(UUID.fromString(refreshTokenString));
         ResponseCookie cookieRefreshToken = tokenCookieService.gerarCookieComRefreshToken(novoRefreshToken.getRefreshToken().toString(), Duration.ofHours(1));
 
-        String acessToken = tokenJWTService.generateToken(novoRefreshToken.getUser(), Duration.ofMinutes(15));
+        String acessToken = tokenJWTService.gerarToken(novoRefreshToken.getUsuario(), Duration.ofMinutes(15));
         ResponseCookie cookieAcessToken = tokenCookieService.gerarCookieComToken(acessToken, Duration.ofMinutes(15));
 
         List<ResponseCookie> cookies = new ArrayList<>();

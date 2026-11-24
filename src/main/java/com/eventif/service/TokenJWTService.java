@@ -17,14 +17,14 @@ public class TokenJWTService {
     @Value("${jwt.secret}")
     private String secret;
 
-    public String generateToken(Usuario user, Duration expiration) {
+    public String gerarToken(Usuario usuario, Duration duracao) {
         try {
             Algorithm algorithm = Algorithm.HMAC256(secret);
 
             return JWT.create()
                     .withIssuer("eventif-auth")
-                    .withSubject(user.getEmail())
-                    .withExpiresAt(Instant.now().plus(expiration))
+                    .withSubject(usuario.getEmail())
+                    .withExpiresAt(Instant.now().plus(duracao))
                     .sign(algorithm);
         } catch (JWTCreationException exception) {
             throw new RuntimeException("Erro ao gerar token");

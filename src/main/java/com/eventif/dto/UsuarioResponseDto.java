@@ -6,20 +6,20 @@ import com.eventif.model.Usuario;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public record UserResponseDto(
+public record UsuarioResponseDto(
         Long id,
-        LocalDateTime createdAt,
-        LocalDateTime updatedAt,
+        LocalDateTime criadoEm,
+        LocalDateTime atualizadoEm,
         String email,
         String nome,
         boolean ativo,
         List<String> perfis
 ) {
-    public static UserResponseDto toDto(Usuario usuario) {
-        return new UserResponseDto(
+    public static UsuarioResponseDto toDto(Usuario usuario) {
+        return new UsuarioResponseDto(
                 usuario.getId(),
-                usuario.getCreatedAt(),
-                usuario.getUpdatedAt(),
+                usuario.getCriadoEm(),
+                usuario.getAtualizadoEm(),
                 usuario.getEmail(),
                 usuario.getNome(),
                 usuario.isAtivo(),

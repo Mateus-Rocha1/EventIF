@@ -1,7 +1,7 @@
 CREATE TABLE usuarios (
     id BIGSERIAL PRIMARY KEY,
-    created_at TIMESTAMP,
-    updated_at TIMESTAMP,
+    criado_em TIMESTAMP,
+    atualizado_em TIMESTAMP,
     nome VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
     senha VARCHAR(255) NOT NULL,
