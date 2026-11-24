@@ -1,6 +1,6 @@
-FROM eclipse-temurin:21-jdk-alpine
+FROM maven:3.9-eclipse-temurin-21-alpine
 WORKDIR /app
 COPY . .
-RUN ./mvnw clean package -DskipTests
+RUN mvn clean package -DskipTests
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "target/eventif-0.0.1-SNAPSHOT.jar"]
