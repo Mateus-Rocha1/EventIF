@@ -16,22 +16,22 @@ public class RefreshToken {
     private UUID refreshToken;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private Usuario user;
+    @JoinColumn(name = "usuario_id", nullable = false)
+    private Usuario usuario;
 
-    private LocalDateTime expiresAt;
+    private LocalDateTime expiraEm;
 
-    private LocalDateTime sessionExpiresAt;
+    private LocalDateTime sessaoExpiraEm;
 
     public RefreshToken() {
     }
 
-    public RefreshToken(Long id, UUID refreshToken, Usuario user, LocalDateTime expiresAt, LocalDateTime sessionExpiresAt) {
+    public RefreshToken(Long id, UUID refreshToken, Usuario usuario, LocalDateTime expiraEm, LocalDateTime sessaoExpiraEm) {
         this.id = id;
         this.refreshToken = refreshToken;
-        this.user = user;
-        this.expiresAt = expiresAt;
-        this.sessionExpiresAt = sessionExpiresAt;
+        this.usuario = usuario;
+        this.expiraEm = expiraEm;
+        this.sessaoExpiraEm = sessaoExpiraEm;
     }
 
     public Long getId() {
@@ -50,27 +50,27 @@ public class RefreshToken {
         this.refreshToken = refreshToken;
     }
 
-    public Usuario getUser() {
-        return user;
+    public Usuario getUsuario() {
+        return usuario;
     }
 
-    public void setUser(Usuario user) {
-        this.user = user;
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
     }
 
-    public LocalDateTime getExpiresAt() {
-        return expiresAt;
+    public LocalDateTime getExpiraEm() {
+        return expiraEm;
     }
 
-    public void setExpiresAt(LocalDateTime expiresAt) {
-        this.expiresAt = expiresAt;
+    public void setExpiraEm(LocalDateTime expiraEm) {
+        this.expiraEm = expiraEm;
     }
 
-    public LocalDateTime getSessionExpiresAt() {
-        return sessionExpiresAt;
+    public LocalDateTime getSessaoExpiraEm() {
+        return sessaoExpiraEm;
     }
 
-    public void setSessionExpiresAt(LocalDateTime sessionExpiresAt) {
-        this.sessionExpiresAt = sessionExpiresAt;
+    public void setSessaoExpiraEm(LocalDateTime sessaoExpiraEm) {
+        this.sessaoExpiraEm = sessaoExpiraEm;
     }
 }
