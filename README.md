@@ -45,6 +45,10 @@ O sistema atende a três públicos autenticados e visitantes:
    ```
    E preencha as variáveis de ambiente no `.env` (exemplo para ambiente local/Docker):
    ```env
+   #PROFILE
+
+   SPRING_PROFILES_ACTIVE=dev
+
    #DATABASE
 
    POSTGRES_DB=eventif
@@ -69,13 +73,15 @@ O sistema atende a três públicos autenticados e visitantes:
 
 ---
 
-## 🧪 Usuários de Teste
+## 🧪 Usuários de Teste (Ambiente de Desenvolvimento)
+
+> ⚠️ **Nota:** Os usuários abaixo são criados automaticamente pela migration repetível (`src/main/resources/db/dev/R__INSERT_USUARIOS_TESTE.sql`), que só é executada quando o perfil `SPRING_PROFILES_ACTIVE=dev` está ativo (`application-dev.properties`). Em produção (`SPRING_PROFILES_ACTIVE=prod`), apenas `classpath:db/migration` é carregado.
 
 | Perfil | Role | E-mail | Senha |
 | :--- | :--- | :--- | :--- |
-| **Administrador** | `ROLE_ADMIN` | `admin@eventif.com` *(preencher quando criar o seed)* | `admin123` |
-| **Organizador** | `ROLE_ORGANIZADOR` | `organizador@eventif.com` *(preencher quando criar o seed)* | `org123` |
-| **Participante** | `ROLE_PARTICIPANTE` | `participante@eventif.com` *(ou criar via `/auth/cadastro-participante`)* | `part123` |
+| **Administrador** | `ROLE_ADMIN` | `admin@eventif.com` | `admin123` |
+| **Organizador** | `ROLE_ORGANIZADOR` | `organizador@eventif.com` | `org123` |
+| **Participante** | `ROLE_PARTICIPANTE` | `participante@eventif.com` | `part123` |
 
 ---
 
@@ -96,10 +102,14 @@ eventif/
 │   │   │   ├── repository/            # Interfaces Spring Data JPA
 │   │   │   └── service/               # Regras de negócio, JWT, Cookies e Refresh Token
 │   │   └── resources/
-│   │       ├── db/migration/          # Scripts SQL versionados do Flyway (V1 a V8)
-│   │       ├── static/                # Arquivos estáticos (CSS, JS, imagens)
-│   │       ├── templates/             # Templates HTML renderizados no servidor (Thymeleaf)
-│   │       └── application.properties # Configurações do Spring Boot, JPA e Flyway
+│   │       ├── db/
+│   │       │   ├── migration/             # Scripts SQL de schema e perfis (V1 a V8 — dev e prod)
+│   │       │   └── dev/                   # Seed repetível de usuários de teste (R__ — apenas dev)
+│   │       ├── static/                    # Arquivos estáticos (CSS, JS, imagens)
+│   │       ├── templates/                 # Templates HTML renderizados no servidor (Thymeleaf)
+│   │       ├── application.properties     # Configurações comuns do Spring Boot e JPA
+│   │       ├── application-dev.properties # Configurações exclusivas de desenvolvimento
+│   │       └── application-prod.properties# Configurações exclusivas de produção
 │   └── test/                          # Testes automatizados (com H2 em escopo de teste)
 ├── .dockerignore
 ├── .env.example

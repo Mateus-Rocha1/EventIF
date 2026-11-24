@@ -146,8 +146,9 @@ erDiagram
 
 ## 6. Migrations do Banco de Dados (Flyway)
 
-O schema é validado pelo Hibernate (`spring.jpa.hibernate.ddl-auto=validate`) e gerenciado integralmente pelo **Flyway** em `src/main/resources/db/migration/`:
+O schema é validado pelo Hibernate (`spring.jpa.hibernate.ddl-auto=validate`) e gerenciado pelo **Flyway**, dividido por perfil do Spring (`SPRING_PROFILES_ACTIVE`):
 
+### Migrations de Schema e Perfis (`src/main/resources/db/migration/` — `dev` e `prod`)
 - `V1__CREATE_TABLE_USUARIOS.sql` — Tabela `usuarios`
 - `V2__CREATE_TABLE_PERFIS.sql` — Tabelas `perfis` e `usuario_perfil` (`@ManyToMany`)
 - `V3__CREATE_TABLE_REFRESH_TOKEN.sql` — Tabela `refresh_token`
@@ -156,3 +157,6 @@ O schema é validado pelo Hibernate (`spring.jpa.hibernate.ddl-auto=validate`) e
 - `V6__CREATE_TABLE_ATIVIDADES.sql` — Tabela `atividades`
 - `V7__CREATE_TABLE_INSCRICOES.sql` — Tabela `inscricoes` com constraint única `(usuario_id, atividade_id)`
 - `V8__INSERT_PERFIS.sql` — Carga inicial dos perfis `ROLE_PARTICIPANTE`, `ROLE_ORGANIZADOR` e `ROLE_ADMIN`
+
+### Migrations de Desenvolvimento (`src/main/resources/db/dev/` — apenas `dev` via `application-dev.properties`)
+- `R__INSERT_USUARIOS_TESTE.sql` — Migration repetível que cria os 3 usuários de teste (`admin@eventif.com`, `organizador@eventif.com`, `participante@eventif.com`) com senhas criptografadas via `pgcrypto` (BCrypt).
