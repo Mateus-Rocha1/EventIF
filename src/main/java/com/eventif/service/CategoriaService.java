@@ -38,7 +38,8 @@ public class CategoriaService {
 
         Categoria categoria = new Categoria();
         categoria.setNome(nome);
-        return CategoriaResponseDto.toDto(categoriaRepository.save(categoria));
+        categoriaRepository.save(categoria);
+        return CategoriaResponseDto.toDto(categoria);
     }
 
     @Transactional
@@ -50,7 +51,8 @@ public class CategoriaService {
         }
 
         categoria.setNome(nome);
-        return CategoriaResponseDto.toDto(categoriaRepository.save(categoria));
+        categoriaRepository.save(categoria);
+        return CategoriaResponseDto.toDto(categoria);
     }
 
     @Transactional

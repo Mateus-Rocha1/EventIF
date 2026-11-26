@@ -1,5 +1,6 @@
 package com.eventif.service;
 
+import com.eventif.dto.UsuarioResponseDto;
 import com.eventif.exception.RegraDeNegocioException;
 import com.eventif.model.Perfil;
 import com.eventif.model.RefreshToken;
@@ -163,5 +164,53 @@ public class UsuarioService implements UserDetailsService {
         cookies.add(cookieAcessTokenLimpo);
         cookies.add(cookieRefreshTokenLimpo);
         return cookies;
+    }
+
+    public List<UsuarioResponseDto> listarUsuarios() {
+        return usuarioRepository.findAll().stream()
+                .map(UsuarioResponseDto::toDto)
+                .toList();
+    }
+
+    @Transactional
+    public UsuarioResponseDto concederPerfilOrganizador(Long id) {
+        Usuario usuario = usuarioRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado"));
+
+        boolean isAdmin = usuario.getPerfis().stream().anyMatch(p -> p.getNome().equals("ROLE_ADMIN"));
+        if (isAdmin) {
+            throw new RegraDeNegocioException("Não é possível alterar o perfil de um administrador");
+        }
+
+        boolean jaEhOrganizador = usuario.getPerfis().stream().anyMatch(p -> p.getNome().equals("ROLE_ORGANIZADOR"));
+        if (jaEhOrganizador) {
+            throw new RegraDeNegocioException("Usuário já possui o perfil de organizador");
+        }
+
+        Perfil perfilOrganizador = perfilRepository.findByNome("ROLE_ORGANIZADOR").orElseThrow(() -> new EntityNotFoundException("Perfil ROLE_ORGANIZADOR não encontrado"));
+
+        usuario.setPerfis(new ArrayList<>(List.of(perfilOrganizador)));
+        usuarioRepository.save(usuario);
+        return UsuarioResponseDto.toDto(usuario);
+    }
+
+    @Transactional
+    public UsuarioResponseDto retirarPerfilOrganizador(Long id) {
+        Usuario usuario = usuarioRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado"));
+
+        boolean isAdmin = usuario.getPerfis().stream().anyMatch(p -> p.getNome().equals("ROLE_ADMIN"));
+        if (isAdmin) {
+            throw new RegraDeNegocioException("Não é possível alterar o perfil de um administrador");
+        }
+
+        boolean ehOrganizador = usuario.getPerfis().stream().anyMatch(p -> p.getNome().equals("ROLE_ORGANIZADOR"));
+        if (!ehOrganizador) {
+            throw new RegraDeNegocioException("Usuário não possui o perfil de organizador");
+        }
+
+        Perfil perfilParticipante = perfilRepository.findByNome("ROLE_PARTICIPANTE").orElseThrow(() -> new EntityNotFoundException("Perfil ROLE_PARTICIPANTE não encontrado"));
+
+        usuario.setPerfis(new ArrayList<>(List.of(perfilParticipante)));
+        usuarioRepository.save(usuario);
+        return UsuarioResponseDto.toDto(usuario);
     }
 }

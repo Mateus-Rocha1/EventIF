@@ -3,6 +3,7 @@ package com.eventif.controller;
 import com.eventif.dto.CadastroRequestDto;
 import com.eventif.dto.CategoriaRequestDto;
 import com.eventif.dto.CategoriaResponseDto;
+import com.eventif.dto.UsuarioResponseDto;
 import com.eventif.service.CategoriaService;
 import com.eventif.service.UsuarioService;
 import jakarta.validation.Valid;
@@ -58,5 +59,23 @@ public class AdminController {
     public ResponseEntity<Void> excluirCategoria(@PathVariable Long id) {
         categoriaService.excluirCategoria(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @GetMapping("/usuarios")
+    public ResponseEntity<List<UsuarioResponseDto>> listarUsuarios() {
+        List<UsuarioResponseDto> usuarios = usuarioService.listarUsuarios();
+        return ResponseEntity.status(HttpStatus.OK).body(usuarios);
+    }
+
+    @PutMapping("/usuarios/{id}/organizador")
+    public ResponseEntity<UsuarioResponseDto> concederPerfilOrganizador(@PathVariable Long id) {
+        UsuarioResponseDto usuario = usuarioService.concederPerfilOrganizador(id);
+        return ResponseEntity.status(HttpStatus.OK).body(usuario);
+    }
+
+    @DeleteMapping("/usuarios/{id}/organizador")
+    public ResponseEntity<UsuarioResponseDto> retirarPerfilOrganizador(@PathVariable Long id) {
+        UsuarioResponseDto usuario = usuarioService.retirarPerfilOrganizador(id);
+        return ResponseEntity.status(HttpStatus.OK).body(usuario);
     }
 }
